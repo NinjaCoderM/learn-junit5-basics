@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -32,7 +33,7 @@ class AppTest {
 
     @DisplayName("ParameterizedTest MethodSource [expectedResult, actualResult]")
     @ParameterizedTest
-    @CsvSource({"11,11", "101,101"})
+    @CsvFileSource(resources = "/testParameterizedMethodSource_AcutalResultEqualsExpectedResult_Success.csv")
     void testParameterizedMethodSource_AcutalResultEqualsExpectedResult_Success(int expectedResult, int actualResult){
         assertEquals(expectedResult, actualResult, ()-> "Expeceted Result: " + expectedResult + ", but actual: " + actualResult + " Lazy Assert Message, Lambda only executed when test fails " );
     }
