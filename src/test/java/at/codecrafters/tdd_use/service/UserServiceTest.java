@@ -10,9 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +23,7 @@ public class UserServiceTest {
     UserRepository userRepository;
 
     @Mock
-    EmailVerificationService emailVerificationService;
+    EmailVerificationServiceImpl emailVerificationService;
 
     @DisplayName("createUser")
     @ParameterizedTest
@@ -94,6 +91,22 @@ public class UserServiceTest {
         doThrow(EmailNotificationServiceException.class).when(emailVerificationService).scheduleEmailConfirmation(Mockito.any(User.class));
         //act & assert
         assertThrows(UserServiceException.class, () -> userService.createUser(id, firstName, lastName, email, password, repeatPassword),"should have thrown an UserServiceException");
+        //Assert
+        verify(emailVerificationService, times(1)).scheduleEmailConfirmation(Mockito.any(User.class));
+    }
+
+    @DisplayName("scheduleEmailConfirmation")
+    @ParameterizedTest
+    @CsvSource({
+            "1, John, Doe, john@example.com, password123, password123",
+            "2, Jane, Smith, jane@example.com, pass456, pass456"
+    })
+    void testCreateUser_wheUserCreated_scheduleEmailConfirmation(Long id, String firstName, String lastName, String email, String password, String repeatPassword) {
+        //arrange
+        when(userRepository.save(Mockito.any(User.class))).thenReturn(true);
+        doCallRealMethod().when(emailVerificationService).scheduleEmailConfirmation(Mockito.any(User.class));
+        //act & assert
+        User user = userService.createUser(id, firstName, lastName, email, password, repeatPassword);
         //Assert
         verify(emailVerificationService, times(1)).scheduleEmailConfirmation(Mockito.any(User.class));
     }
