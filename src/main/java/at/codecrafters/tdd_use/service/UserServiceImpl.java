@@ -17,7 +17,14 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("First name cannot be null or empty");
         }
         User user = new User(id, firstName, lastName, email, password, repeatPassword);
-        boolean isUserCreated = userRepository.save(user);
+
+        boolean isUserCreated;
+        try{
+            isUserCreated = userRepository.save(user);
+        } catch(Exception e){
+            throw new UserServiceException(e.getMessage());
+        }
+
         if(!isUserCreated) throw new UserServiceException("Could not create user");
         return user;
     }

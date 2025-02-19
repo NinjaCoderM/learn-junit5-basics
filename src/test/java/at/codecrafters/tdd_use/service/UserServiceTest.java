@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -61,5 +63,18 @@ public class UserServiceTest {
                 "Empty firstname should have thrown an IllegalArgumentException");
 
         assertEquals("First name cannot be null or empty", excep.getMessage(), "Message should be 'First name cannot be null or empty'");
+    }
+
+    @DisplayName("createUser throws RuntimeException")
+    @ParameterizedTest
+    @CsvSource({
+            "1, John, Doe, john@example.com, password123, password123",
+            "2, Jane, Smith, jane@example.com, pass456, pass456"
+    })
+    void testCreateUser_whenRuntimeException_throwsUserServiceException(Long id, String firstName, String lastName, String email, String password, String repeatPassword) {
+        //arrange
+        when(userRepository.save(Mockito.any(User.class))).thenThrow(new RuntimeException("Database error"));
+        // act & assert
+        assertThrows(UserServiceException.class, () -> userService.createUser(id, firstName, lastName, email, password, repeatPassword),"should have thrown an SQLException");
     }
 }
