@@ -1,14 +1,27 @@
 package at.codecrafters.tdd_use.service;
 
+import at.codecrafters.tdd_use.data.UserRepository;
 import at.codecrafters.tdd_use.model.User;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+
+    @InjectMocks
+    UserServiceImpl userService;
+
+    @Mock
+    UserRepository userRepository;
 
     @DisplayName("createUser")
     @ParameterizedTest
@@ -18,7 +31,8 @@ public class UserServiceTest {
     })
     void testCreateUser_whenUserDetailProvided_returnsUserObject(Long id, String firstName, String lastName, String email, String password, String repeatPassword){
         //arrange
-        UserService userService = new UserServiceImpl();
+        //userService = new UserServiceImpl(userRepository);
+        when(userRepository.save(Mockito.any(User.class))).thenReturn(true);
 
         //act
         User user = userService.createUser(id, firstName, lastName, email, password, repeatPassword);
@@ -31,6 +45,7 @@ public class UserServiceTest {
         assertEquals(password, user.getPassword(), "createUser password should be the same");
         assertEquals(repeatPassword, user.getRepeatPassword(), "createUser repeatPassword should be the same");
         assertNotNull(user.getId(), "User ID is missing");
+        Mockito.verify(userRepository/* default: , Mockito.times(1)*/).save(Mockito.any(User.class));
     }
 
     @DisplayName("createUser firstName empty throws IllegalArgumentException")
@@ -41,8 +56,6 @@ public class UserServiceTest {
     })
     void testCreateUser_whenFirstNameIsEmpty_throwsIllegalArgumentException(Long id, String firstName, String lastName, String email, String password, String repeatPassword) {
         //arrange
-        UserService userService = new UserServiceImpl();
-
         // act & assert
         IllegalArgumentException excep = assertThrows(IllegalArgumentException.class, () -> userService.createUser(id, firstName, lastName, email, password, repeatPassword),
                 "Empty firstname should have thrown an IllegalArgumentException");
