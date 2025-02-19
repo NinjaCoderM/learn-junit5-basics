@@ -6,9 +6,11 @@ import at.codecrafters.tdd_use.model.User;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private EmailVerificationService emailVerificationService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, EmailVerificationService emailVerificationService) {
         this.userRepository = userRepository;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @Override
@@ -24,6 +26,12 @@ public class UserServiceImpl implements UserService {
         } catch(Exception e){
             throw new UserServiceException(e.getMessage());
         }
+        try{
+            emailVerificationService.scheduleEmailConfirmation(user);
+        } catch(Exception e){
+            throw new UserServiceException(e.getMessage());
+        }
+
 
         if(!isUserCreated) throw new UserServiceException("Could not create user");
         return user;
