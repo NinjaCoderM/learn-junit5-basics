@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(Long id, String firstName, String lastName, String email, String password, String repeatPassword) {
-        if(firstName==null || firstName.equals("")){
+        if(firstName==null || firstName.isEmpty()){
             throw new IllegalArgumentException("First name cannot be null or empty");
         }
         User user = new User(id, firstName, lastName, email, password, repeatPassword);

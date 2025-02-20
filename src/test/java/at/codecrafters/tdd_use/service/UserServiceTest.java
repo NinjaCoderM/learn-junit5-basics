@@ -55,7 +55,7 @@ public class UserServiceTest {
     @ParameterizedTest
     @CsvSource({
             "1, , Doe, john@example.com, password123, password123",
-            "2, , Smith, jane@example.com, pass456, pass456"
+            "2, '', Smith, jane@example.com, pass456, pass456"
     })
     void testCreateUser_whenFirstNameIsEmpty_throwsIllegalArgumentException(Long id, String firstName, String lastName, String email, String password, String repeatPassword) {
         //arrange
